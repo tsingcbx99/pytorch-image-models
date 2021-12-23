@@ -13,7 +13,6 @@ from .parsers import create_parser
 
 _logger = logging.getLogger(__name__)
 
-
 _ERROR_RETRY = 50
 
 
@@ -118,7 +117,8 @@ class AugMixDataset(torch.utils.data.Dataset):
     def __init__(self, dataset, num_splits=2):
         self.augmentation = None
         self.normalize = None
-        self.dataset = dataset
+        self.dataset = dataset.dataset
+        self.subset = dataset
         if self.dataset.transform is not None:
             self._set_transforms(self.dataset.transform)
         self.num_splits = num_splits
@@ -141,7 +141,7 @@ class AugMixDataset(torch.utils.data.Dataset):
         return x if self.normalize is None else self.normalize(x)
 
     def __getitem__(self, i):
-        x, y = self.dataset[i]  # all splits share the same dataset base transform
+        x, y = self.subset[i]  # all splits share the same dataset base transform
         x_list = [self._normalize(x)]  # first split only normalizes (this is the 'clean' split)
         # run the full augmentation on the remaining splits
         for _ in range(self.num_splits - 1):
@@ -149,4 +149,4 @@ class AugMixDataset(torch.utils.data.Dataset):
         return tuple(x_list), y
 
     def __len__(self):
-        return len(self.dataset)
+        return len(self.subset)
