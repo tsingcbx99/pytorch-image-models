@@ -6,6 +6,7 @@ import torch.utils.data as data
 import os
 import torch
 import logging
+import torchvision.transforms as T
 
 from PIL import Image
 
@@ -122,6 +123,7 @@ class AugMixDataset(torch.utils.data.Dataset):
         if self.dataset.transform is not None:
             self._set_transforms(self.dataset.transform)
         self.num_splits = num_splits
+        self.specified_transform = None
 
     def _set_transforms(self, x):
         assert isinstance(x, (list, tuple)) and len(x) == 3, 'Expecting a tuple/list of 3 transforms'
@@ -142,6 +144,13 @@ class AugMixDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, i):
         x, y = self.subset[i]  # all splits share the same dataset base transform
+        if self.specified_transform:
+            # TODO: apply specified_transform
+            transform = T.Compose([
+                self.transform,
+                T.ToTensor()
+            ])
+            return self._normalize(transform(x)), y
         x_list = [self._normalize(x)]  # first split only normalizes (this is the 'clean' split)
         # run the full augmentation on the remaining splits
         for _ in range(self.num_splits - 1):

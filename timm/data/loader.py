@@ -176,16 +176,14 @@ def create_loader(
         use_multi_epochs_loader=False,
         persistent_workers=True,
         worker_seeding='all',
-        transform=None
+        set_transform=True
 ):
     re_num_splits = 0
     if re_split:
         # apply RE to second half of batch if no aug split otherwise line up with aug split
         re_num_splits = num_aug_splits or 2
 
-    if transform is not None:
-        dataset.transform = transform
-    else:
+    if set_transform:
         dataset.transform = create_transform(
             input_size,
             is_training=is_training,
