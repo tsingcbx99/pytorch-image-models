@@ -24,9 +24,12 @@ class SplitBatchNorm2d(torch.nn.BatchNorm2d):
         self.num_splits = num_splits
         self.aux_bn = nn.ModuleList([
             nn.BatchNorm2d(num_features, eps, momentum, affine, track_running_stats) for _ in range(num_splits - 1)])
+        self.applying_split_bn = True
 
     def forward(self, input: torch.Tensor):
         if self.training:  # aux BN only relevant while training
+            if not self.applying_split_bn:
+                return super().forward(input)
             split_size = input.shape[0] // self.num_splits
             assert input.shape[0] == split_size * self.num_splits, "batch size must be evenly divisible by num_splits"
             split_input = input.split(split_size)
