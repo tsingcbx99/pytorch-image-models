@@ -150,6 +150,12 @@ class AugMixDataset(torch.utils.data.Dataset):
                 T.ToTensor()
             ])
             return self._normalize(transform(x)), y
+        if self.algorithm == 'fix_match':
+            transform = T.Compose([
+                self.transform,
+                T.ToTensor()
+            ])
+            return self._normalize(transform(x)), self._normalize(self.augmentation(x)), y
         x_list = [self._normalize(x)]  # first split only normalizes (this is the 'clean' split)
         # run the full augmentation on the remaining splits
         for _ in range(self.num_splits - 1):
