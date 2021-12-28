@@ -150,6 +150,12 @@ class AugMixDataset(torch.utils.data.Dataset):
                 T.ToTensor()
             ])
             return self._normalize(transform(x)), y
+        if self.algorithm == 'mdd':
+            transform = T.Compose([
+                self.transform,
+                T.ToTensor()
+            ])
+            return self._normalize(transform(x)), y
         if self.algorithm == 'fix_match':
             transform = T.Compose([
                 self.transform,
