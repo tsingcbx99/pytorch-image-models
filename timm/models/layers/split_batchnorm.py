@@ -31,6 +31,8 @@ class SplitBatchNorm2d(torch.nn.BatchNorm2d):
             split_size = input.shape[0] // self.num_splits
             if self.algorithm == 'pseudo_label':
                 split_input = [input[:80], input[80:112], input[112:144]]
+            elif self.algorithm == 'mdd':
+                split_input = [input[:80], input[80:112], input[112:144]]
             else:
                 split_input = input.split(split_size)
             x = [super().forward(split_input[0])]
