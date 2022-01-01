@@ -145,11 +145,11 @@ class AugMixDataset(torch.utils.data.Dataset):
     def __getitem__(self, i):
         x, y = self.subset[i]  # all splits share the same dataset base transform
         if self.algorithm == 'pseudo_label':
-            return self._normalize(self.transform(x)), y
+            return self._normalize(x), y
         if self.algorithm == 'mdd':
-            return self._normalize(self.transform(x)), y
+            return self._normalize(x), y
         if self.algorithm == 'fix_match':
-            return self._normalize(self.transform(x)), self._normalize(self.augmentation(x)), y
+            return self._normalize(x), self._normalize(self.augmentation(x)), y
         x_list = [self._normalize(x)]  # first split only normalizes (this is the 'clean' split)
         # run the full augmentation on the remaining splits
         for _ in range(self.num_splits - 1):

@@ -51,7 +51,7 @@ class SplitBatchNorm2d(torch.nn.BatchNorm2d):
         if self.training:  # aux BN only relevant while training
             split_size = input.shape[0] // self.num_splits
             if self.algorithm == 'pseudo_label':
-                split_input = [input[:80], input[80:112], input[112:144]]
+                split_input = [input[:32], input[32:64], input[64:96], input[96:144]]
             elif self.algorithm == 'mdd':
                 split_input = [input[:80], input[80:112], input[112:144]]
             else:
