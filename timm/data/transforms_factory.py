@@ -67,7 +67,7 @@ def transforms_imagenet_train(
      * normalizes and converts the branches above with the third, final transform
     """
     scale = tuple(scale or (0.08, 1.0))  # default imagenet scale range
-    ratio = tuple(ratio or (3./4., 4./3.))  # default imagenet ratio range
+    ratio = tuple(ratio or (3. / 4., 4. / 3.))  # default imagenet ratio range
     primary_tfl = [
         RandomResizedCropAndInterpolation(img_size, scale=scale, ratio=ratio, interpolation=interpolation)]
     if hflip > 0.:
@@ -103,7 +103,8 @@ def transforms_imagenet_train(
             assert len(color_jitter) in (3, 4)
         else:
             # if it's a scalar, duplicate for brightness, contrast, and saturation, no hue
-            color_jitter = (float(color_jitter),) * 3
+            color_jitter = float(color_jitter)
+            color_jitter = [color_jitter, color_jitter, color_jitter, 0.2]
         secondary_tfl += [transforms.ColorJitter(*color_jitter)]
 
     final_tfl = []
@@ -157,8 +158,8 @@ def transforms_imagenet_eval(
         tfl += [
             transforms.ToTensor(),
             transforms.Normalize(
-                     mean=torch.tensor(mean),
-                     std=torch.tensor(std))
+                mean=torch.tensor(mean),
+                std=torch.tensor(std))
         ]
 
     return transforms.Compose(tfl)
@@ -185,7 +186,6 @@ def create_transform(
         crop_pct=None,
         tf_preprocessing=False,
         separate=False):
-
     if isinstance(input_size, (tuple, list)):
         img_size = input_size[-2:]
     else:
