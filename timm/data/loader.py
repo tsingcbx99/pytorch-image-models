@@ -176,6 +176,7 @@ def create_loader(
         use_multi_epochs_loader=False,
         persistent_workers=True,
         worker_seeding='all',
+        transform=None
 ):
     re_num_splits = 0
     if re_split:
@@ -183,51 +184,57 @@ def create_loader(
         re_num_splits = num_aug_splits or 2
 
     if isinstance(dataset, torch.utils.data.Subset):
-        dataset.dataset.transform = create_transform(
-            input_size,
-            is_training=is_training,
-            use_prefetcher=use_prefetcher,
-            no_aug=no_aug,
-            scale=scale,
-            ratio=ratio,
-            hflip=hflip,
-            vflip=vflip,
-            color_jitter=color_jitter,
-            auto_augment=auto_augment,
-            interpolation=interpolation,
-            mean=mean,
-            std=std,
-            crop_pct=crop_pct,
-            tf_preprocessing=tf_preprocessing,
-            re_prob=re_prob,
-            re_mode=re_mode,
-            re_count=re_count,
-            re_num_splits=re_num_splits,
-            separate=num_aug_splits > 0,
-        )
+        if transform is None:
+            dataset.dataset.transform = create_transform(
+                input_size,
+                is_training=is_training,
+                use_prefetcher=use_prefetcher,
+                no_aug=no_aug,
+                scale=scale,
+                ratio=ratio,
+                hflip=hflip,
+                vflip=vflip,
+                color_jitter=color_jitter,
+                auto_augment=auto_augment,
+                interpolation=interpolation,
+                mean=mean,
+                std=std,
+                crop_pct=crop_pct,
+                tf_preprocessing=tf_preprocessing,
+                re_prob=re_prob,
+                re_mode=re_mode,
+                re_count=re_count,
+                re_num_splits=re_num_splits,
+                separate=num_aug_splits > 0,
+            )
+        else:
+            dataset.dataset.transform = transform
     else:
-        dataset.transform = create_transform(
-            input_size,
-            is_training=is_training,
-            use_prefetcher=use_prefetcher,
-            no_aug=no_aug,
-            scale=scale,
-            ratio=ratio,
-            hflip=hflip,
-            vflip=vflip,
-            color_jitter=color_jitter,
-            auto_augment=auto_augment,
-            interpolation=interpolation,
-            mean=mean,
-            std=std,
-            crop_pct=crop_pct,
-            tf_preprocessing=tf_preprocessing,
-            re_prob=re_prob,
-            re_mode=re_mode,
-            re_count=re_count,
-            re_num_splits=re_num_splits,
-            separate=num_aug_splits > 0,
-        )
+        if transform is None:
+            dataset.transform = create_transform(
+                input_size,
+                is_training=is_training,
+                use_prefetcher=use_prefetcher,
+                no_aug=no_aug,
+                scale=scale,
+                ratio=ratio,
+                hflip=hflip,
+                vflip=vflip,
+                color_jitter=color_jitter,
+                auto_augment=auto_augment,
+                interpolation=interpolation,
+                mean=mean,
+                std=std,
+                crop_pct=crop_pct,
+                tf_preprocessing=tf_preprocessing,
+                re_prob=re_prob,
+                re_mode=re_mode,
+                re_count=re_count,
+                re_num_splits=re_num_splits,
+                separate=num_aug_splits > 0,
+            )
+        else:
+            dataset.transform = transform
 
     sampler = None
     if distributed and not isinstance(dataset, torch.utils.data.IterableDataset):
